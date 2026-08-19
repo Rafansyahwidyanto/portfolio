@@ -1,0 +1,1734 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rafansyah Widyanto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F7F5F1;
+    --ink:#161615;
+    --dim:#7A7A78;
+    --line:#E4E0D8;
+    --card:#FFFFFF;
+  }
+  
+  /* Tema Gelap (Dark Mode) */
+  html[data-theme="dark"] {
+    --bg: #161615;
+    --ink: #F7F5F1;
+    --dim: #A3A3A0;
+    --line: #333330;
+    --card: #1F1F1E;
+  }
+
+  /* =========================================
+     EFEK TRANSISI MELINGKAR (VIEW TRANSITION API)
+     ========================================= */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+  ::view-transition-new(root) {
+    z-index: 9999;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--ink);color:var(--bg);}
+  a{color:inherit;text-decoration:none;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 32px;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
+    .skill-card:hover, .skill-card li:hover, .org-item:hover, .tag-row span:hover, .project-tags span:hover, .btn:hover{transform:none !important;}
+  }
+
+  /* NAV */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    padding:0;
+    display:flex;justify-content:center;
+    pointer-events:none;
+  }
+  nav .nav-inner{
+    pointer-events:auto;
+    width:100%;
+    max-width:1120px;
+    margin:0 32px;
+    display:flex;justify-content:space-between;align-items:center;
+    padding:20px 32px;
+    background:rgba(247,245,241,0.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+    border-radius:0;
+    box-shadow:none;
+    transition:
+      max-width 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+      margin 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+      padding 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+      border-radius 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.45s ease,
+      border-color 0.45s ease,
+      background 0.3s ease,
+      transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  html[data-theme="dark"] nav .nav-inner {
+    background: rgba(22, 22, 21, 0.85);
+  }
+  nav.floating .nav-inner{
+    max-width:760px;
+    margin:14px auto 0;
+    padding:12px 28px;
+    border-radius:99px;
+    border-bottom:1px solid transparent;
+    border:1px solid var(--line);
+    box-shadow:0 10px 30px rgba(22,22,21,0.1);
+  }
+  nav.nav-hidden .nav-inner{
+    transform:translateY(-140%);
+  }
+  .nav-logo{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:1.05rem;}
+  .nav-links{display:flex;gap:32px;font-size:0.88rem;color:var(--dim);}
+  .nav-links a:hover{color:var(--ink);}
+  .nav-links a:focus-visible, a:focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:2px;}
+
+  /* =========================================
+     ANIMASI TOMBOL DARK MODE (BULAN & MATAHARI)
+     ========================================= */
+  .theme-toggle {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    position: relative;
+    z-index: 101;
+    overflow: hidden;
+    transition: background 0.3s ease;
+  }
+  .theme-toggle:hover {
+    background: rgba(122, 122, 120, 0.1);
+  }
+  
+  .theme-toggle .icon-sun,
+  .theme-toggle .icon-moon {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Transisi mantul (cubic-bezier) biar kerasa interaktif */
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+  }
+
+  /* KONDISI LIGHT MODE (Tampilkan Bulan, Sembunyikan Matahari) */
+  html[data-theme="light"] .theme-toggle .icon-sun {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.3);
+  }
+  html[data-theme="light"] .theme-toggle .icon-moon {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+
+  /* KONDISI DARK MODE (Tampilkan Matahari, Sembunyikan Bulan) */
+  html[data-theme="dark"] .theme-toggle .icon-sun {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+  html[data-theme="dark"] .theme-toggle .icon-moon {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.3);
+  }
+
+  /* MOBILE MENU TOGGLE */
+  .nav-toggle{
+    display:none;
+    background:none;border:none;cursor:pointer;
+    padding:8px;
+    align-items:center;justify-content:center;
+    gap:4px;
+    flex-direction:column;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .nav-toggle .dot{
+    width:4px;height:4px;border-radius:50%;
+    background:var(--ink);
+    transition:transform 0.25s ease, opacity 0.25s ease;
+  }
+  .nav-toggle[aria-expanded="true"] .dot:nth-child(1){transform:translateX(2px);}
+  .nav-toggle[aria-expanded="true"] .dot:nth-child(3){transform:translateX(-2px);}
+
+  .nav-dropdown{
+    position:fixed;
+    top:0;left:0;right:0;bottom:0;
+    background:rgba(22,22,21,0.35);
+    backdrop-filter:blur(2px);
+    opacity:0;
+    visibility:hidden;
+    transition:opacity 0.3s ease, visibility 0.3s ease;
+    z-index:99;
+  }
+  .nav-dropdown.open{opacity:1;visibility:visible;}
+  .nav-dropdown-panel{
+    position:absolute;
+    top:78px;right:16px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    box-shadow:0 20px 48px rgba(22,22,21,0.16);
+    padding:10px;
+    display:flex;flex-direction:column;
+    min-width:190px;
+    transform:translateY(-10px);
+    transition:transform 0.3s cubic-bezier(0.22,1,0.36,1);
+  }
+  .nav-dropdown.open .nav-dropdown-panel{transform:translateY(0);}
+  .nav-dropdown-panel a{
+    padding:12px 16px;
+    font-size:0.92rem;
+    border-radius:10px;
+    color:var(--ink);
+    transition:background 0.2s ease;
+  }
+  .nav-dropdown-panel a:hover,
+  .nav-dropdown-panel a:focus-visible{background:var(--bg);outline:none;}
+
+  @media (max-width:760px){
+    .nav-links{display:none;}
+    .nav-toggle{display:flex;}
+    nav .nav-inner{margin:0 16px;padding:16px 20px;}
+    nav.floating .nav-inner{margin:10px auto 0;padding:10px 20px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    nav .nav-inner{transition:none;}
+  }
+
+  /* HERO */
+  header.hero{
+    padding:150px 0 60px;
+    position:relative;
+  }
+  .hero-grid{
+    display:grid;
+    grid-template-columns:1.1fr 0.9fr;
+    gap:48px;
+    align-items:center;
+  }
+  .hero-left .eyebrow{
+    display:flex;align-items:center;gap:10px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.78rem;color:var(--dim);
+    letter-spacing:0.04em;text-transform:uppercase;
+    margin-bottom:28px;
+    opacity:0;
+    animation:fadeUp 0.7s ease forwards;
+  }
+  .hero-left .eyebrow .rule{width:32px;height:1px;background:var(--ink);}
+  
+  h1.hello{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:clamp(4rem, 11vw, 8.5rem);
+    line-height:0.9;
+    letter-spacing:-0.03em;
+    opacity:0;
+    animation:fadeUp 0.7s ease 0.08s forwards;
+    min-height:1.00em;
+    display:flex;
+    align-items:baseline;
+  }
+  
+  h1.hello .word-stack{position:relative;display:inline-block;width:100%;}
+  h1.hello .word{
+    position:absolute;left:0;top:0;
+    display:inline-block;
+    white-space:nowrap;
+    opacity:0;
+    transform:translateY(14px);
+    animation-name:wordCycle;
+    animation-duration:21s;
+    animation-timing-function:ease;
+    animation-iteration-count:infinite;
+  }
+  h1.hello .word:nth-child(1){ font-family:'Space Grotesk',sans-serif; font-weight:700; animation-delay:0s; }
+  h1.hello .word:nth-child(2){ font-family:'Inter',sans-serif; font-weight:700; animation-delay:3s; letter-spacing:-0.02em; }
+  h1.hello .word:nth-child(3){ font-family:'JetBrains Mono',monospace; font-weight:500; animation-delay:6s; font-size:0.52em; letter-spacing:-0.05em; }
+  h1.hello .word:nth-child(4){ font-family:'Space Grotesk',sans-serif; font-weight:600; animation-delay:9s; font-size:0.55em; }
+  h1.hello .word:nth-child(5){ font-family:'Inter',sans-serif; font-style:italic; font-weight:600; animation-delay:12s; font-size:0.7em; }
+  h1.hello .word:nth-child(6){ font-family:'JetBrains Mono',monospace; font-weight:500; animation-delay:15s; font-size:0.6em; letter-spacing:-0.03em; }
+  h1.hello .word:nth-child(7){ font-family:'Space Grotesk',sans-serif; font-weight:700; animation-delay:18s; }
+
+  @keyframes wordCycle{
+    0%{opacity:0;transform:translateY(14px);}
+    3%{opacity:1;transform:translateY(0);}
+    10%{opacity:1;transform:translateY(0);}
+    13%{opacity:0;transform:translateY(-14px);}
+    100%{opacity:0;transform:translateY(-14px);}
+  }
+  @media (prefers-reduced-motion: reduce){
+    h1.hello .word{animation:none;position:static;opacity:1;transform:none;}
+    h1.hello .word:not(:first-child){display:none;}
+  }
+  
+  .hero-left .intro-line{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:clamp(1.1rem, 2.4vw, 1.5rem);
+    color:var(--ink);
+    margin-top:20px;
+    opacity:0;
+    animation:fadeUp 0.7s ease 0.16s forwards;
+  }
+  
+  .hero-left .intro-line span{color:var(--dim);}
+  .hero-stats{
+    display:flex;gap:40px;
+    margin-top:52px;
+    opacity:0;
+    animation:fadeUp 0.7s ease 0.26s forwards;
+  }
+  .hero-stats .stat b{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:1.9rem;font-weight:600;display:block;
+  }
+  .hero-stats .stat span{font-size:0.82rem;color:var(--dim);}
+  .scroll-hint{
+    margin-top:64px;
+    display:flex;align-items:center;gap:10px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.78rem;color:var(--dim);
+    opacity:0;
+    animation:fadeUp 0.7s ease 0.34s forwards;
+  }
+  .scroll-hint .arrow{display:inline-block;animation:bob 1.6s ease-in-out infinite;}
+  @keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(5px);}}
+
+  .hero-right{
+    position:relative;
+    opacity:0;
+    animation:fadeUp 0.8s ease 0.15s forwards;
+  }
+  .portrait{
+    width:100%;
+    aspect-ratio:3/4;
+    border-radius:18px;
+    overflow:hidden;
+    background:linear-gradient(160deg,#e9e5db,#d8d3c6);
+    display:flex;align-items:center;justify-content:center;
+    position:relative;
+    border:1px solid var(--line);
+  }
+  html[data-theme="dark"] .portrait {
+    background:linear-gradient(160deg,#2A2A28,#1F1F1E);
+  }
+  .portrait img{width:100%;height:100%;object-fit:cover;filter:grayscale(100%);display:block;}
+  .portrait .placeholder-txt{
+    font-family:'JetBrains Mono',monospace;font-size:0.85rem;color:var(--dim);text-align:center;padding:20px;
+  }
+  .portrait-tag{
+    position:absolute;bottom:16px;left:16px;
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:99px;
+    padding:8px 16px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.75rem;
+  }
+
+  @keyframes fadeUp{
+    from{opacity:0;transform:translateY(18px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+
+  @media (max-width:860px){
+    .hero-grid{grid-template-columns:1fr;}
+    .hero-right{order:-1;max-width:340px;margin:0 auto 20px;}
+    header.hero{padding:130px 0 40px;}
+    .hero-stats{gap:28px;}
+  }
+
+  /* SECTION generic */
+  section{padding:90px 0;border-top:1px solid var(--line);}
+  .section-label{
+    font-family:'JetBrains Mono',monospace;
+    color:var(--dim);
+    font-size:0.8rem;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    margin-bottom:12px;
+  }
+  h2.section-title{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    font-size:clamp(1.6rem,4vw,2.4rem);
+    margin-bottom:36px;
+    max-width:640px;
+    letter-spacing:-0.01em;
+  }
+
+  /* SKILLS */
+  .skill-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px;}
+  .skill-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:26px;
+    transition:transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+  .skill-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 12px 28px rgba(0,0,0,0.08);
+    border-color:var(--ink);
+  }
+  .skill-card h3{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:1.05rem;margin-bottom:14px;
+  }
+  .skill-card ul{list-style:none;display:flex;flex-wrap:wrap;gap:8px;}
+  .skill-card li{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.76rem;
+    background:var(--bg);
+    border:1px solid var(--line);
+    padding:5px 10px;border-radius:6px;
+    color:var(--dim);
+    transition:transform 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    cursor:default;
+  }
+  .skill-card li:hover{
+    transform:translateY(-3px) scale(1.05);
+    background:var(--ink);
+    color:var(--bg);
+    border-color:var(--ink);
+  }
+
+  /* ORG EXPERIENCE */
+  .org-list{display:flex;flex-direction:column;gap:0;}
+  .org-item{
+    display:grid;grid-template-columns:120px 1fr;gap:24px;
+    padding:28px 0;border-bottom:1px solid var(--line);
+    transition:transform 0.25s ease, padding-left 0.25s ease, background 0.25s ease;
+    border-radius:10px;
+  }
+  .org-item:last-child{border-bottom:none;}
+  .org-item:hover{
+    padding-left:16px;
+    padding-right:16px;
+    margin:0 -16px;
+    background:var(--card);
+  }
+  .org-item .yr{font-family:'JetBrains Mono',monospace;color:var(--dim);font-size:0.85rem;padding-top:2px;transition:color 0.25s ease;}
+  .org-item:hover .yr{color:var(--ink);}
+  .org-item h3{font-family:'Space Grotesk',sans-serif;font-size:1.15rem;margin-bottom:4px;}
+  .org-item .pos{color:var(--dim);font-size:0.9rem;margin-bottom:10px;}
+  .org-item p.desc{color:var(--dim);font-size:0.94rem;margin-bottom:10px;}
+  .tag-row{display:flex;flex-wrap:wrap;gap:8px;}
+  .tag-row span{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;color:var(--dim);
+    border:1px solid var(--line);
+    padding:3px 9px;border-radius:99px;
+    transition:transform 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    cursor:default;
+    display:inline-block;
+  }
+  .tag-row span:hover{
+    transform:translateY(-2px) scale(1.05);
+    background:var(--ink);
+    color:var(--bg);
+    border-color:var(--ink);
+  }
+  @media (max-width:640px){
+    .org-item{grid-template-columns:1fr;gap:6px;}
+    .org-item:hover{margin:0;padding-left:0;padding-right:0;}
+  }
+
+  /* PROJECTS */
+  .project-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;}
+  .project-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:12px;
+    overflow:hidden;
+    transition:transform 0.25s ease, box-shadow 0.25s ease;
+    display:flex;flex-direction:column;
+  }
+  .project-card:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(0,0,0,0.08);}
+  .project-thumb{
+    height:150px;
+    background:linear-gradient(135deg, #EDEAE3, #DEDACF);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Space Grotesk',sans-serif;
+    color:var(--dim);
+    font-size:0.85rem;
+    border-bottom:1px solid var(--line);
+  }
+  html[data-theme="dark"] .project-thumb {
+    background:linear-gradient(135deg, #2A2A28, #1F1F1E);
+  }
+  .project-body{padding:20px;display:flex;flex-direction:column;gap:10px;flex:1;}
+  .project-body h3{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;}
+  .project-body p{color:var(--dim);font-size:0.9rem;flex:1;}
+  .project-tags{display:flex;flex-wrap:wrap;gap:6px;}
+  .project-tags span{
+    font-family:'JetBrains Mono',monospace;font-size:0.7rem;
+    color:var(--ink);border:1px solid var(--line);
+    padding:3px 8px;border-radius:6px;
+    transition:transform 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    cursor:default;
+    display:inline-block;
+  }
+  .project-tags span:hover{
+    transform:translateY(-3px) scale(1.05);
+    background:var(--ink);
+    color:var(--bg);
+    border-color:var(--ink);
+  }
+  .project-link{
+    font-size:0.85rem;color:var(--ink);
+    border-top:1px solid var(--line);padding-top:12px;margin-top:4px;
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  .project-link:hover{color:var(--dim);}
+  .project-link .arrow{
+    display:inline-block;
+    transition:transform 0.25s ease;
+  }
+  .project-link:hover .arrow{
+    transform:translateX(5px);
+  }
+
+  /* ABOUT */
+  .about-wrap{display:flex;flex-direction:column;gap:44px;}
+  .about-wrap .about-copy{font-size:1.02rem;color:var(--dim);display:flex;flex-direction:column;gap:16px;max-width:720px;}
+  .about-wrap .about-copy strong{color:var(--ink);}
+
+  /* MOMENT GALLERY */
+  .gallery-heading{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:1.15rem;font-weight:600;
+    margin-bottom:18px;
+  }
+  .moment-gallery{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+  }
+  .moment-item{
+    aspect-ratio:1/1;
+    border-radius:12px;
+    overflow:hidden;
+    background:linear-gradient(150deg,#EDEAE3,#DEDACF);
+    border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    position:relative;
+    transition:transform 0.3s ease, box-shadow 0.3s ease;
+    cursor:pointer;
+  }
+  html[data-theme="dark"] .moment-item {
+    background:linear-gradient(150deg,#2A2A28,#1F1F1E);
+  }
+  .moment-item:hover{
+    transform:translateY(-5px) scale(1.02);
+    box-shadow:0 14px 30px rgba(0,0,0,0.1);
+    z-index:2;
+  }
+  .moment-item img{width:100%;height:100%;object-fit:cover;display:block;}
+  .moment-item .placeholder-txt{
+    font-family:'JetBrains Mono',monospace;font-size:0.66rem;color:var(--dim);text-align:center;padding:10px;
+  }
+  .moment-item .expand-icon{
+    position:absolute;top:10px;right:10px;
+    width:28px;height:28px;border-radius:50%;
+    background:rgba(247,245,241,0.9);
+    color:#161615;
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;transform:scale(0.8);
+    transition:opacity 0.25s ease, transform 0.25s ease;
+  }
+  .moment-item:hover .expand-icon{opacity:1;transform:scale(1);}
+  .moment-item.wide{grid-column:span 2;}
+  @media (max-width:760px){
+    .moment-gallery{grid-template-columns:repeat(2,1fr);}
+    .moment-item.wide{grid-column:span 2;}
+    .moment-item .expand-icon{opacity:1;transform:scale(1);}
+  }
+
+  /* LIGHTBOX */
+  .lightbox{
+    position:fixed;inset:0;
+    background:rgba(11,11,10,0.94);
+    z-index:200;
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;visibility:hidden;
+    transition:opacity 0.3s ease, visibility 0.3s ease;
+  }
+  .lightbox.open{opacity:1;visibility:visible;}
+  .lightbox-content{
+    max-width:90vw;max-height:82vh;
+    display:flex;align-items:center;justify-content:center;
+    border-radius:12px;
+    overflow:hidden;
+    transform:scale(0.96);
+    transition:transform 0.3s ease;
+  }
+  .lightbox.open .lightbox-content{transform:scale(1);}
+  .lightbox-content img{max-width:90vw;max-height:82vh;object-fit:contain;display:block;}
+  .lightbox-content .placeholder-txt{
+    color:var(--bg);font-family:'JetBrains Mono',monospace;font-size:0.9rem;
+    padding:60px;text-align:center;
+  }
+  .lightbox-close{
+    position:absolute;top:24px;right:28px;
+    width:44px;height:44px;border-radius:50%;
+    background:rgba(247,245,241,0.12);
+    border:1px solid rgba(247,245,241,0.3);
+    color:#F7F5F1;
+    font-size:1.3rem;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    transition:background 0.2s ease;
+  }
+  .lightbox-close:hover{background:rgba(247,245,241,0.22);}
+  .lightbox-nav{
+    position:absolute;top:50%;transform:translateY(-50%);
+    width:48px;height:48px;border-radius:50%;
+    background:rgba(247,245,241,0.12);
+    border:1px solid rgba(247,245,241,0.3);
+    color:#F7F5F1;
+    font-size:1.2rem;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    transition:background 0.2s ease;
+  }
+  .lightbox-nav:hover{background:rgba(247,245,241,0.22);}
+  .lightbox-nav.prev{left:20px;}
+  .lightbox-nav.next{right:20px;}
+  @media (max-width:640px){
+    .lightbox-close{top:14px;right:14px;width:38px;height:38px;}
+    .lightbox-nav{width:38px;height:38px;}
+    .lightbox-nav.prev{left:8px;}
+    .lightbox-nav.next{right:8px;}
+  }
+  .lightbox-content iframe{
+    width:min(90vw,860px);height:82vh;
+    border:none;background:var(--bg);
+    border-radius:12px;
+  }
+  .lightbox.single .lightbox-nav{display:none;}
+
+  /* CERTIFICATE FOLDERS */
+  .cert-intro{
+    color:var(--dim);
+    max-width:640px;
+    margin:-18px 0 32px;
+    font-size:0.95rem;
+  }
+  .cert-folder-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:20px;
+  }
+  .cert-folder{
+    text-align:left;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:28px;
+    cursor:pointer;
+    font-family:inherit;
+    color:var(--ink);
+    transition:transform 0.3s ease, box-shadow 0.3s ease;
+    display:flex;flex-direction:column;gap:10px;
+  }
+  .cert-folder:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(0,0,0,0.08);}
+  .cert-folder-icon{
+    width:44px;height:44px;
+    border-radius:10px;
+    background:var(--bg);
+    border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.3rem;
+  }
+  .cert-folder h3{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;font-size:1.15rem;
+  }
+  .cert-folder p{color:var(--dim);font-size:0.9rem;}
+  .cert-folder-count{
+    font-size:0.76rem;color:var(--dim);
+    letter-spacing:0.03em;
+    margin-top:auto;
+    padding-top:6px;
+  }
+  @media (max-width:640px){
+    .cert-folder-grid{grid-template-columns:1fr;}
+  }
+
+  /* =========================================
+     CERT MODAL POP-UP (TENGAH)
+     ========================================= */
+  .cert-modal-overlay{
+    position:fixed;inset:0;
+    background:rgba(11,11,10,0.6);
+    backdrop-filter:blur(3px);
+    z-index:150;
+    opacity:0;visibility:hidden;
+    transition:opacity 0.35s ease, visibility 0.35s ease;
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;
+  }
+  .cert-modal-overlay.open{opacity:1;visibility:visible;}
+  
+  .cert-modal{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    width:900px; max-width:100%;
+    height:600px; max-height:90vh;
+    display:flex;flex-direction:column;
+    box-shadow:0 24px 48px rgba(0,0,0,0.2);
+    transform:translateY(20px) scale(0.98);
+    transition:transform 0.4s cubic-bezier(0.22,1,0.36,1);
+    overflow:hidden;
+  }
+  .cert-modal-overlay.open .cert-modal{transform:translateY(0) scale(1);}
+  
+  .cert-modal-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:20px 24px;
+    border-bottom:1px solid var(--line);
+    background:var(--bg);
+  }
+  .cert-modal-title-wrap {
+    display:flex; align-items:center; gap:12px;
+  }
+  .cert-modal-badge {
+    font-family:'JetBrains Mono',monospace; font-size:0.7rem; 
+    padding:4px 8px; border:1px solid var(--line); 
+    border-radius:6px; background:var(--card); color:var(--dim);
+  }
+  .cert-modal-head h3{
+    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:1.1rem;
+  }
+  .cert-modal-close{
+    width:34px;height:34px;border-radius:50%;
+    border:1px solid var(--line);
+    background:var(--card);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    font-size:1rem; color:var(--dim);
+    transition:background 0.2s ease, color 0.2s ease;
+  }
+  .cert-modal-close:hover{background:var(--line); color:var(--ink);}
+  
+  .cert-modal-body{
+    display:flex; flex:1; overflow:hidden;
+  }
+  
+  /* Kolom Kiri: Daftar Sertifikat */
+  .cert-modal-list{
+    width:40%;
+    border-right:1px solid var(--line);
+    background:var(--card);
+    overflow-y:auto;
+    padding:16px;
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .cert-list-item{
+    display:flex; align-items:flex-start; gap:14px;
+    padding:14px; border-radius:10px; border:1px solid transparent;
+    cursor:pointer; transition:background 0.2s, border 0.2s;
+  }
+  .cert-list-item:hover{background:var(--bg);}
+  .cert-list-item.active{background:var(--bg); border-color:var(--line);}
+  
+  .cert-list-icon{
+    width:42px; height:42px; border-radius:8px; background:var(--card);
+    border:1px solid var(--line); display:flex; align-items:center; justify-content:center;
+    flex-shrink:0; font-size:1.2rem;
+  }
+  .cert-list-text{flex:1; overflow:hidden;}
+  .cert-list-text h4{
+    font-size:0.92rem; font-weight:600; color:var(--ink);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .cert-list-text p{
+    font-size:0.75rem; color:var(--dim); margin-top:4px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  
+  /* Kolom Kanan: Detail & Preview */
+  .cert-modal-preview{
+    width:60%;
+    background:var(--bg);
+    padding:32px;
+    display:flex; flex-direction:column;
+    overflow-y:auto;
+  }
+  .cert-preview-image{
+    width:100%; height:280px;
+    border-radius:12px; border:1px solid var(--line);
+    background:var(--card);
+    margin-bottom:24px; position:relative;
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+  }
+  .cert-preview-image img{width:100%; height:100%; object-fit:cover;}
+  .cert-preview-image .placeholder{font-family:'JetBrains Mono',monospace; color:var(--dim); font-size:0.85rem;}
+  
+  .cert-preview-btn-overlay{
+    position:absolute; bottom:16px; right:16px;
+    font-family:'JetBrains Mono',monospace; font-size:0.75rem; font-weight:500;
+    padding:10px 18px; border-radius:8px;
+    background:var(--ink); color:var(--bg); border:none; cursor:pointer;
+    transition:transform 0.2s, background 0.2s; box-shadow:0 4px 12px rgba(0,0,0,0.15);
+  }
+  .cert-preview-btn-overlay:hover{transform:translateY(-2px); filter:brightness(1.2);}
+  
+  .cert-preview-info h2{font-family:'Space Grotesk',sans-serif; font-size:1.4rem; margin-bottom:8px; line-height:1.3;}
+  .cert-preview-info p.meta{font-family:'JetBrains Mono',monospace; color:var(--dim); font-size:0.8rem; margin-bottom:16px;}
+  .cert-preview-info p.desc{color:var(--dim); font-size:0.95rem; line-height:1.6; margin-bottom:24px;}
+  
+  .cert-preview-actions{display:flex; gap:12px;}
+  .cert-preview-actions a{
+    font-family:'JetBrains Mono',monospace; font-size:0.8rem;
+    padding:10px 18px; border-radius:8px; border:1px solid var(--line);
+    background:var(--card); color:var(--ink); text-decoration:none;
+    transition:background 0.2s, transform 0.2s;
+  }
+  .cert-preview-actions a:hover{background:var(--bg); transform:translateY(-2px);}
+  
+  .cert-empty-state {
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    height:100%; color:var(--dim); text-align:center; padding:20px;
+  }
+
+  @media (max-width:760px){
+    .cert-modal{flex-direction:column; height:85vh;}
+    .cert-modal-body{flex-direction:column;}
+    .cert-modal-list{width:100%; height:40%; border-right:none; border-bottom:1px solid var(--line);}
+    .cert-modal-preview{width:100%; height:60%; padding:20px;}
+    .cert-preview-image{height:200px;}
+  }
+
+  /* TYPEWRITER */
+  .typewriter p{
+    opacity:0;
+    visibility:hidden;
+  }
+  .typewriter p.tw-active{
+    opacity:1;
+    visibility:visible;
+  }
+  .typewriter .tw-cursor{
+    display:inline-block;
+    width:2px;
+    background:var(--ink);
+    margin-left:2px;
+    animation:tw-blink 0.85s step-end infinite;
+  }
+  @keyframes tw-blink{
+    0%,100%{opacity:1;}
+    50%{opacity:0;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .typewriter p{opacity:1 !important;visibility:visible !important;}
+    .typewriter .tw-cursor{display:none;}
+  }
+
+  /* CONTACT */
+  .contact-box{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:48px;
+    text-align:center;
+  }
+  .contact-box h2{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:clamp(1.6rem,4vw,2.2rem);
+    margin-bottom:14px;
+  }
+  .contact-box p{color:var(--dim);margin-bottom:28px;max-width:480px;margin-left:auto;margin-right:auto;}
+  .contact-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+  .btn{
+    font-family:'JetBrains Mono',monospace;font-size:0.85rem;
+    padding:12px 22px;border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--card);
+    color:var(--ink);
+    font-weight:600;
+    display:inline-block;
+    transition:background 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .btn:hover{
+    background:var(--ink);
+    color:var(--bg);
+    border-color:var(--ink);
+    transform:translateY(-3px);
+    box-shadow:0 10px 24px rgba(0,0,0,0.14);
+  }
+  .btn:active{transform:translateY(-1px);}
+  @media (prefers-reduced-motion: reduce){
+    .btn:hover{transform:none;}
+  }
+
+  footer{
+    padding:32px 0;border-top:1px solid var(--line);
+    text-align:center;color:var(--dim);font-size:0.82rem;
+    font-family:'JetBrains Mono',monospace;
+  }
+
+  /* reveal on scroll */
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity 0.6s ease, transform 0.6s ease;}
+  .reveal.in{opacity:1;transform:translateY(0);}
+
+  ::placeholder{color:#a8a49a;}
+</style>
+</head>
+<body>
+
+<nav id="mainNav">
+  <div class="nav-inner">
+    <div class="nav-logo mono">Portfolio</div>
+    
+    <!-- Semua disatukan dalam grup Kanan agar jaraknya pas dan rapat -->
+    <div class="nav-right" style="display:flex; align-items:center; gap:32px;">
+      <div class="nav-links">
+        <a href="#skills">Skills</a>
+        <a href="#organisasi">Organisasi</a>
+        <a href="#projects">Project</a>
+        <a href="#sertifikat">Sertifikat</a>
+        <a href="#about">Tentang</a>
+        <a href="#contact">Kontak</a>
+      </div>
+      
+      <div style="display:flex; align-items:center; gap:8px;">
+        <!-- Tombol diupdate agar berisi 2 span bertumpuk (Matahari & Bulan) -->
+        <button id="themeToggle" class="theme-toggle" aria-label="Ganti Tema">
+          <span class="icon-sun">☀️</span>
+          <span class="icon-moon">🌙</span>
+        </button>
+        <button class="nav-toggle" id="navToggle" aria-label="Buka menu" aria-expanded="false" aria-controls="navDropdown">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="nav-dropdown" id="navDropdown">
+  <div class="nav-dropdown-panel">
+    <a href="#skills">Skills</a>
+    <a href="#organisasi">Organisasi</a>
+    <a href="#projects">Project</a>
+    <a href="#sertifikat">Sertifikat</a>
+    <a href="#about">Tentang</a>
+    <a href="#contact">Kontak</a>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-left">
+      <div class="eyebrow"><span class="rule"></span></div>
+      <h1 class="hello">
+        <span class="word-stack">
+          <span class="word">Halo.</span>
+          <span class="word">Horas.</span>
+          <span class="word">Sampurasun.</span>
+          <span class="word">Om Swastyastu.</span>
+          <span class="word">Rahajeng.</span>
+          <span class="word">Tabik Pun.</span>
+          <span class="word">Punten.</span>
+        </span>
+      </h1>
+      <p class="intro-line">— Saya <strong>Rafansyah Widyanto</strong>, <span>Saya Merupakan Mahasiswa Semester 5</span></p>
+
+      <div class="hero-stats">
+        <div class="stat">
+          <b data-count="2" data-suffix="">0</b>
+          <span>Tahun aktif<br>di HIMA</span>
+        </div>
+        <div class="stat">
+          <b data-count="8" data-suffix="+">0</b>
+          <span>Program kerja<br>terlibat</span>
+        </div>
+        <div class="stat">
+          <b>2026</b>
+          <span>Wakil Kepala<br>Divisi HR</span>
+        </div>
+      </div>
+
+      <div class="scroll-hint">Scroll ke bawah <span class="arrow">↓</span></div>
+    </div>
+
+    <div class="hero-right">
+      <div class="portrait">
+        <!-- Ganti div placeholder ini dengan: <img src="foto-kamu.jpg" alt="Foto [Nama Kamu]"> -->
+        <div class="placeholder-txt">[Taruh foto potret kamu<br>di sini — ganti tag ini<br>dengan &lt;img src="foto.jpg"&gt;]</div>
+      </div>
+      <div class="portrait-tag mono">2026 · Aktif</div>
+    </div>
+  </div>
+</header>
+
+<section id="skills">
+  <div class="wrap reveal">
+    <div class="section-label">// Kemampuan</div>
+    <h2 class="section-title">Skills &amp; Tools</h2>
+    <div class="skill-groups">
+      <div class="skill-card">
+        <h3>Teknis</h3>
+        <ul>
+          <li>HTML·CSS·JavaScript·PHP</li>
+          <li>Python</li>
+          <li>Kotlin</li>
+          <li>Java</li>
+          <li>MySQL</li>
+          <li>Tools: Orange·Archi·SPSS</li>
+        </ul>
+      </div>
+      <div class="skill-card">
+        <h3>Organisasi</h3>
+        <ul>
+          <li>Kepemimpinan Tim</li>
+          <li>Manajemen SDM</li>
+          <li>Penyusunan Regulasi Internal</li>
+          <li>Riset &amp; Publikasi Informasi</li>
+        </ul>
+      </div>
+      <div class="skill-card">
+        <h3>Soft Skills</h3>
+        <ul>
+          <li>Komunikasi</li>
+          <li>Kerja Tim</li>
+          <li>Manajemen Waktu</li>
+          <li>Problem Solving</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="organisasi">
+  <div class="wrap reveal">
+    <div class="section-label">// Pengalaman</div>
+    <h2 class="section-title">Perjalanan di Himpunan Mahasiswa</h2>
+    <div class="org-list">
+      <div class="org-item">
+        <div class="yr mono">2026</div>
+        <div>
+          <h3>Wakil Kepala Divisi Human Resource</h3>
+          <div class="pos">Himpunan Mahasiswa</div>
+          <p class="desc">
+            Mengawasi kinerja staff dan memimpin proses penyusunan peraturan/regulasi internal HIMA.<br>
+            Terlibat dalam berbagai program kerja antara lain, yaitu:
+          </p>
+          <div class="tag-row">
+            <span>Study Club</span><span>Charity</span><span>Studi Banding</span>
+            <span>SI Welcome Talk</span><span>Makrab</span><span>SI FEST</span>
+            <span>PPB</span><span>LDKO</span>
+          </div>
+        </div>
+      </div>
+      <div class="org-item">
+        <div class="yr mono">2025</div>
+        <div>
+          <h3>Staff Divisi Education</h3>
+          <div class="pos">Himpunan Mahasiswa</div>
+          <p class="desc">
+            Meneliti peluang beasiswa dan berkoordinasi dengan Divisi Humas untuk mempublikasikan
+            informasi beasiswa melalui media sosial HIMA.<br> Terlibat dalam berbagai program kerja antara lain, yaitu:
+          </p>
+          <div class="tag-row">
+            <span>Study Club</span><span>FORDIS</span><span>Charity</span>
+            <span>Makrab</span><span>SI FEST</span><span>PPB</span><span>LDKO</span>
+          </div>
+        </div>
+      </div>
+      <div class="org-item">
+        <div class="yr mono">2024</div>
+        <div>
+          <h3>Volunteer — Divisi Perlengkapan &amp; Koordinator Divisi Acara</h3>
+          <div class="pos">SI Fest 2024 &amp; Tim Formatur BPM</div>
+          <p class="desc">
+            Berkontribusi sebagai Divisi Perlengkapan pada SI Fest 2024, dan sebagai Koordinator
+            Divisi Acara pada Tim Formatur BPM.
+          </p>
+          <div class="tag-row">
+            <span>SI Fest 2024</span><span>Tim Formatur BPM</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="wrap reveal">
+    <div class="section-label">// Karya</div>
+    <h2 class="section-title">Project yang Pernah Saya Kerjakan</h2>
+    <div class="project-grid">
+
+      <div class="project-card">
+        <div class="project-thumb">[Screenshot Project 1]</div>
+        <div class="project-body">
+          <h3>[Nama Project 1]</h3>
+          <p>[Deskripsi singkat: apa masalah yang diselesaikan, apa peranmu.]</p>
+          <div class="project-tags"><span>[Tech]</span><span>[Tech]</span></div>
+          <a class="project-link mono" href="#"><span class="arrow">→</span> Lihat detail</a>
+        </div>
+      </div>
+      <div class="project-card">
+        <div class="project-thumb">[Screenshot Project 2]</div>
+        <div class="project-body">
+          <h3>[Nama Project 2]</h3>
+          <p>[Deskripsi singkat project.]</p>
+          <div class="project-tags"><span>[Tech]</span><span>[Tech]</span></div>
+          <a class="project-link mono" href="#"><span class="arrow">→</span> Lihat detail</a>
+        </div>
+      </div>
+      <div class="project-card">
+        <div class="project-thumb">[Screenshot Project 3]</div>
+        <div class="project-body">
+          <h3>[Nama Project 3]</h3>
+          <p>[Deskripsi singkat project.]</p>
+          <div class="project-tags"><span>[Tech]</span><span>[Tech]</span></div>
+          <a class="project-link mono" href="#"><span class="arrow">→</span> Lihat detail</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="sertifikat">
+  <div class="wrap reveal">
+    <div class="section-label">// Dokumentasi</div>
+    <h2 class="section-title">Sertifikat &amp; Sertifikasi</h2>
+    <p class="cert-intro">
+      Dua kategori berbeda: <strong>Sertifikat</strong> untuk bukti keikutsertaan seminar/webinar/pelatihan singkat,
+      dan <strong>Sertifikasi</strong> untuk kualifikasi formal berjenjang (mis. CCNA, TOEFL).
+    </p>
+    <div class="cert-folder-grid">
+      <button class="cert-folder" type="button" data-cert-group="sertifikat" aria-haspopup="dialog">
+        <div class="cert-folder-icon">📁</div>
+        <h3>Sertifikat</h3>
+        <p>Bukti keikutsertaan seminar, webinar, workshop, dan pelatihan singkat.</p>
+        <div class="cert-folder-count mono" data-count-for="sertifikat">0 dokumen</div>
+      </button>
+      <button class="cert-folder" type="button" data-cert-group="sertifikasi" aria-haspopup="dialog">
+        <div class="cert-folder-icon">📁</div>
+        <h3>Sertifikasi</h3>
+        <p>Kualifikasi formal berjenjang seperti CCNA, TOEFL, dan sejenisnya.</p>
+        <div class="cert-folder-count mono" data-count-for="sertifikasi">0 dokumen</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- DATA SERTIFIKAT -->
+  <div id="certData" hidden>
+    <div class="cert-group" data-group="sertifikat">
+      <div class="cert-item" data-name="Peserta Seminar Teknologi Nasional" data-issuer="Kementerian Kominfo" data-year="2025" data-desc="Keikutsertaan dalam seminar terkait perkembangan teknologi AI di Indonesia yang diselenggarakan oleh Kementerian." data-pdf="#" data-thumb=""></div>
+      <div class="cert-item" data-name="Webinar: Cloud Computing 101" data-issuer="AWS User Group" data-year="2025" data-desc="Pengenalan dasar-dasar Cloud Computing menggunakan infrastruktur dari Amazon Web Services." data-pdf="#" data-thumb=""></div>
+      <div class="cert-item" data-name="Workshop UI/UX Fundamental" data-issuer="Himpunan Mahasiswa" data-year="2024" data-desc="Pelatihan desain antarmuka dasar menggunakan Figma selama 2 hari." data-pdf="#" data-thumb=""></div>
+    </div>
+    <div class="cert-group" data-group="sertifikasi">
+      <div class="cert-item" data-name="Cisco Certified Network Associate (CCNA)" data-issuer="Cisco" data-year="2025" data-desc="Sertifikasi profesional internasional untuk membuktikan kompetensi dalam instalasi, konfigurasi, operasional, dan troubleshooting jaringan komputer." data-pdf="#" data-thumb=""></div>
+      <div class="cert-item" data-name="TOEFL ITP" data-issuer="ETS" data-year="2025" data-desc="Skor bahasa Inggris standar internasional. Dicapai skor: 550." data-pdf="#" data-thumb=""></div>
+    </div>
+  </div>
+</section>
+
+<!-- MODAL POP-UP TENGAH UNTUK SERTIFIKAT -->
+<div class="cert-modal-overlay" id="certModalOverlay">
+  <div class="cert-modal" id="certModal" role="dialog" aria-modal="true" aria-labelledby="certModalTitle">
+    
+    <div class="cert-modal-head">
+      <div class="cert-modal-title-wrap">
+        <span class="cert-modal-badge">FOLDER</span>
+        <h3 id="certModalTitle">Sertifikat</h3>
+      </div>
+      <button class="cert-modal-close" id="certModalClose" aria-label="Tutup modal">✕</button>
+    </div>
+
+    <div class="cert-modal-body">
+      <!-- Daftar di sebelah kiri -->
+      <div class="cert-modal-list" id="certModalList">
+      </div>
+      
+      <!-- Detail preview di sebelah kanan -->
+      <div class="cert-modal-preview" id="certModalPreview">
+        <div class="cert-empty-state">Silakan pilih dokumen di samping</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<section id="about">
+  <div class="wrap reveal">
+    <div class="section-label">// Tentang Saya</div>
+    <h2 class="section-title">Sedikit lebih dekat</h2>
+    <div class="about-wrap">
+      <div class="about-copy typewriter" id="aboutTypewriter">
+        <p data-tw="1">
+          Saya adalah mahasiswa semester 5 di <strong>Universitas Budi Luhur</strong>, jurusan <strong>Sistem Informasi</strong>.
+          Selain fokus di perkuliahan, saya aktif berorganisasi di Himpunan Mahasiswa Sistem Informasi (HIMASI) — mulai dari
+          merancang program kerja hingga mengelola tim.
+        </p>
+        <p data-tw="2">
+          Di tahun 2025, saya menjabat sebagai <strong>Staff Divisi Education</strong>, tempat saya banyak meneliti
+          peluang beasiswa dan berkoordinasi dengan Divisi Humas untuk publikasi informasi beasiswa di media sosial HIMASI.
+        </p>
+        <p data-tw="3">
+          Memasuki 2026, saya dipercaya sebagai <strong>Wakil Kepala Divisi Human Resource</strong>, mengawasi kinerja
+          staff dan memimpin penyusunan peraturan internal organisasi.
+        </p>
+        <p data-tw="4">
+          saya tertarik mendalami pengembangan web dan data science / machine learning — menggabungkan logika pemrograman dengan ketertarikan saya dalam mengolah dan memahami data.
+          <br>Selain dari angka dan kode, ada juga cerita di balik layar — beberapa momen yang saya abadikan sepanjang perjalanan berorganisasi dan berkarya.
+        </p>
+      </div>
+
+      <div>
+        <div class="gallery-heading">Galleries</div>
+        <div class="moment-gallery" id="momentGallery">
+          <div class="moment-item wide" data-caption="Momen 1" tabindex="0" role="button" aria-label="Perbesar Momen 1">
+            <div class="placeholder-txt">[Momen 1]</div>
+            <span class="expand-icon">⤢</span>
+          </div>
+          <div class="moment-item" data-caption="Momen 2" tabindex="0" role="button" aria-label="Perbesar Momen 2">
+            <div class="placeholder-txt">[Momen 2]</div>
+            <span class="expand-icon">⤢</span>
+          </div>
+          <div class="moment-item" data-caption="Momen 3" tabindex="0" role="button" aria-label="Perbesar Momen 3">
+            <div class="placeholder-txt">[Momen 3]</div>
+            <span class="expand-icon">⤢</span>
+          </div>
+          <div class="moment-item" data-caption="Momen 4" tabindex="0" role="button" aria-label="Perbesar Momen 4">
+            <div class="placeholder-txt">[Momen 4]</div>
+            <span class="expand-icon">⤢</span>
+          </div>
+          <div class="moment-item" data-caption="Momen 5" tabindex="0" role="button" aria-label="Perbesar Momen 5">
+            <div class="placeholder-txt">[Momen 5]</div>
+            <span class="expand-icon">⤢</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Tutup">✕</button>
+  <button class="lightbox-nav prev" id="lightboxPrev" aria-label="Sebelumnya">←</button>
+  <div class="lightbox-content" id="lightboxContent"></div>
+  <button class="lightbox-nav next" id="lightboxNext" aria-label="Berikutnya">→</button>
+</div>
+
+<section id="contact">
+  <div class="wrap reveal">
+    <div class="contact-box">
+      <h2>Mari Terhubung</h2>
+      <p>Terbuka untuk diskusi seputar pekerjaan, organisasi, kolaborasi project, atau sekadar say hi.</p>
+      <div class="contact-btns">
+        <a class="btn" href="mailto:rafansyah.widyanto@email.com">Kirim Email</a>
+        <a class="btn" href="https://www.linkedin.com/in/rafansyah-widyanto-49410b420/" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="btn" href="https://github.com/Rafansyahwidyanto" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  © 2026 Rafansyah Widyanto. Dibuat dengan HTML, CSS &amp; JS.
+</footer>
+
+<script>
+  /* =========================================
+     DARK MODE DENGAN CIRCULAR VIEW TRANSITION 
+     & CSS ANIMATION UNTUK ICON BULAN-MATAHARI
+     ========================================= */
+  (function initTheme(){
+    const toggle = document.getElementById('themeToggle');
+    const html = document.documentElement;
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    function applyTheme(theme) {
+      html.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+      // Animasi Bulan/Matahari (Skala/Rotasi/Fading) sekarang murni ditangani oleh CSS di bagian atas!
+    }
+
+    if(savedTheme === 'dark' || (!savedTheme && systemPrefersDark)){
+      applyTheme('dark');
+    } else {
+      applyTheme('light');
+    }
+
+    toggle.addEventListener('click', (e) => {
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      const targetTheme = isDark ? 'light' : 'dark';
+
+      if (!document.startViewTransition) {
+        applyTheme(targetTheme);
+        return;
+      }
+
+      const x = e.clientX;
+      const y = e.clientY;
+      const endRadius = Math.hypot(
+        Math.max(x, window.innerWidth - x),
+        Math.max(y, window.innerHeight - y)
+      );
+
+      const transition = document.startViewTransition(() => {
+        applyTheme(targetTheme);
+      });
+
+      transition.ready.then(() => {
+        const clipPath = [
+          `circle(0px at ${x}px ${y}px)`,
+          `circle(${endRadius}px at ${x}px ${y}px)`
+        ];
+        
+        document.documentElement.animate(
+          {
+            clipPath: clipPath,
+          },
+          {
+            duration: 600, 
+            easing: 'ease-out',
+            pseudoElement: '::view-transition-new(root)',
+          }
+        );
+      });
+    });
+  })();
+
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('in');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {threshold:0.12});
+  revealEls.forEach(el => observer.observe(el));
+
+  /* TYPEWRITER: about section */
+  function initTypewriter(){
+    const container = document.getElementById('aboutTypewriter');
+    if(!container) return;
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduceMotion){
+      container.querySelectorAll('p').forEach(p => p.classList.add('tw-active'));
+      return;
+    }
+
+    const paragraphs = Array.from(container.querySelectorAll('p'));
+    const originals = paragraphs.map(p => Array.from(p.childNodes));
+    paragraphs.forEach(p => { p.innerHTML = ''; });
+
+    let pIndex = 0;
+
+    function typeParagraph(p, nodes, done){
+      p.classList.add('tw-active');
+      const cursor = document.createElement('span');
+      cursor.className = 'tw-cursor';
+      cursor.textContent = '\u00A0';
+      p.appendChild(cursor);
+
+      const queue = [];
+      nodes.forEach(node => {
+        if(node.nodeType === Node.TEXT_NODE){
+          node.textContent.split('').forEach(ch => queue.push({type:'char', value:ch}));
+        } else {
+          const tag = node.tagName ? node.tagName.toLowerCase() : 'span';
+          queue.push({type:'open', tag});
+          (node.textContent || '').split('').forEach(ch => queue.push({type:'char', value:ch}));
+          queue.push({type:'close'});
+        }
+      });
+
+      let i = 0;
+      let currentEl = p;
+      function step(){
+        if(i >= queue.length){
+          cursor.remove();
+          done();
+          return;
+        }
+        const item = queue[i];
+        if(item.type === 'open'){
+          const el = document.createElement(item.tag);
+          currentEl.insertBefore(el, cursor);
+          currentEl = el;
+        } else if(item.type === 'close'){
+          currentEl = p;
+        } else {
+          currentEl.insertBefore(document.createTextNode(item.value), currentEl === p ? cursor : null);
+        }
+        i++;
+        const delay = 3 + Math.random() * 6;
+        setTimeout(step, delay);
+      }
+      step();
+    }
+
+    function typeNext(){
+      if(pIndex >= paragraphs.length) return;
+      const p = paragraphs[pIndex];
+      const nodes = originals[pIndex];
+      typeParagraph(p, nodes, () => {
+        pIndex++;
+        setTimeout(typeNext, 100);
+      });
+    }
+
+    const twObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          typeNext();
+          twObserver.unobserve(entry.target);
+        }
+      });
+    }, {threshold:0.25});
+    twObserver.observe(container);
+  }
+  initTypewriter();
+
+  /* COUNT-UP: hero stats */
+  function initCountUp(){
+    const els = document.querySelectorAll('.hero-stats b[data-count]');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    els.forEach(el => {
+      const target = parseInt(el.getAttribute('data-count'), 10);
+      const suffix = el.getAttribute('data-suffix') || '';
+      if(reduceMotion){
+        el.textContent = target + suffix;
+        return;
+      }
+      const duration = 1800;
+      const start = performance.now();
+      function tick(now){
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 2); 
+        const value = Math.min(target, Math.floor(eased * (target + 1)));
+        el.textContent = value + suffix;
+        if(progress < 1){
+          requestAnimationFrame(tick);
+        } else {
+          el.textContent = target + suffix;
+        }
+      }
+      requestAnimationFrame(tick);
+    });
+  }
+  setTimeout(initCountUp, 1200);
+
+  /* FLOATING NAV */
+  (function initFloatingNav(){
+    const nav = document.getElementById('mainNav');
+    if(!nav) return;
+    const threshold = 90;
+    let lastY = window.scrollY;
+    let ticking = false;
+
+    function update(){
+      const y = window.scrollY;
+      if(y > threshold){
+        nav.classList.add('floating');
+      } else {
+        nav.classList.remove('floating');
+      }
+      lastY = y;
+      ticking = false;
+    }
+
+    window.addEventListener('scroll', () => {
+      if(!ticking){
+        requestAnimationFrame(update);
+        ticking = true;
+      }
+    }, {passive:true});
+    update();
+  })();
+
+  /* MOBILE NAV DROPDOWN */
+  (function initNavDropdown(){
+    const toggle = document.getElementById('navToggle');
+    const dropdown = document.getElementById('navDropdown');
+    if(!toggle || !dropdown) return;
+
+    function closeMenu(){
+      dropdown.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+    function openMenu(){
+      dropdown.classList.add('open');
+      toggle.setAttribute('aria-expanded', 'true');
+    }
+    toggle.addEventListener('click', () => {
+      const isOpen = dropdown.classList.contains('open');
+      isOpen ? closeMenu() : openMenu();
+    });
+    dropdown.addEventListener('click', (e) => {
+      if(e.target === dropdown) closeMenu();
+    });
+    dropdown.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', closeMenu);
+    });
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape') closeMenu();
+    });
+  })();
+
+  /* LIGHTBOX (UNTUK GAMBAR MOMENT & VIEW PDF) */
+  const lightbox = document.getElementById('lightbox');
+  const lightboxContent = document.getElementById('lightboxContent');
+  
+  (function initLightbox(){
+    const gallery = document.getElementById('momentGallery');
+    const btnClose = document.getElementById('lightboxClose');
+    const btnPrev = document.getElementById('lightboxPrev');
+    const btnNext = document.getElementById('lightboxNext');
+    if(!gallery || !lightbox) return;
+
+    const items = Array.from(gallery.querySelectorAll('.moment-item'));
+    let currentIndex = 0;
+
+    function renderItem(index){
+      const item = items[index];
+      const img = item.querySelector('img');
+      lightboxContent.innerHTML = '';
+      if(img){
+        const clone = document.createElement('img');
+        clone.src = img.src;
+        clone.alt = img.alt || item.getAttribute('data-caption') || '';
+        lightboxContent.appendChild(clone);
+      } else {
+        const ph = document.createElement('div');
+        ph.className = 'placeholder-txt';
+        ph.textContent = item.getAttribute('data-caption') || 'Foto belum ditambahkan';
+        lightboxContent.appendChild(ph);
+      }
+    }
+
+    function open(index){
+      currentIndex = index;
+      renderItem(currentIndex);
+      lightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function close(){
+      lightbox.classList.remove('open');
+      lightbox.classList.remove('single');
+      // Jangan kembalikan overflow body jika Modal Sertifikat masih terbuka
+      const certModal = document.getElementById('certModalOverlay');
+      if(!(certModal && certModal.classList.contains('open'))){
+        document.body.style.overflow = '';
+      }
+    }
+    function next(){
+      currentIndex = (currentIndex + 1) % items.length;
+      renderItem(currentIndex);
+    }
+    function prev(){
+      currentIndex = (currentIndex - 1 + items.length) % items.length;
+      renderItem(currentIndex);
+    }
+
+    items.forEach((item, i) => {
+      item.addEventListener('click', () => open(i));
+      item.addEventListener('keydown', (e) => {
+        if(e.key === 'Enter' || e.key === ' '){
+          e.preventDefault();
+          open(i);
+        }
+      });
+    });
+
+    btnClose.addEventListener('click', close);
+    btnNext.addEventListener('click', next);
+    btnPrev.addEventListener('click', prev);
+    lightbox.addEventListener('click', (e) => {
+      if(e.target === lightbox) close();
+    });
+    document.addEventListener('keydown', (e) => {
+      if(!lightbox.classList.contains('open')) return;
+      if(e.key === 'Escape'){ e.stopImmediatePropagation(); close(); }
+      if(e.key === 'ArrowRight' && !lightbox.classList.contains('single')) next();
+      if(e.key === 'ArrowLeft' && !lightbox.classList.contains('single')) prev();
+    });
+  })();
+
+  /* FUNGSI BANTUAN UNTUK PDF LIGHTBOX DARI MODAL */
+  function openPdfLightbox(pdfUrl, name){
+    if(!lightbox || !lightboxContent) return;
+    lightboxContent.innerHTML = '';
+    if(pdfUrl && pdfUrl !== '#'){
+      const iframe = document.createElement('iframe');
+      iframe.src = pdfUrl;
+      iframe.title = name;
+      lightboxContent.appendChild(iframe);
+    } else {
+      const ph = document.createElement('div');
+      ph.className = 'placeholder-txt';
+      ph.textContent = 'File PDF/Gambar belum ditambahkan untuk "' + name + '"';
+      lightboxContent.appendChild(ph);
+    }
+    lightbox.classList.add('single');
+    lightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  /* MODAL TENGAH: SERTIFIKAT & SERTIFIKASI */
+  (function initCertModal(){
+    const dataRoot = document.getElementById('certData');
+    const overlay = document.getElementById('certModalOverlay');
+    const modalTitle = document.getElementById('certModalTitle');
+    const modalList = document.getElementById('certModalList');
+    const modalPreview = document.getElementById('certModalPreview');
+    const modalClose = document.getElementById('certModalClose');
+    const folders = document.querySelectorAll('.cert-folder');
+    if(!dataRoot || !overlay) return;
+
+    const labels = { sertifikat: 'Sertifikat', sertifikasi: 'Sertifikasi' };
+
+    document.querySelectorAll('.cert-folder-count').forEach(el => {
+      const group = el.getAttribute('data-count-for');
+      const count = dataRoot.querySelectorAll('.cert-group[data-group="' + group + '"] .cert-item').length;
+      el.textContent = count + ' dokumen';
+    });
+
+    function renderPreview(item){
+      const name = item.getAttribute('data-name') || '[Nama Dokumen]';
+      const issuer = item.getAttribute('data-issuer') || '[Penerbit]';
+      const year = item.getAttribute('data-year') || '';
+      const desc = item.getAttribute('data-desc') || 'Tidak ada deskripsi rinci untuk sertifikat ini.';
+      const pdf = item.getAttribute('data-pdf') || '#';
+      const thumb = item.getAttribute('data-thumb') || '';
+
+      let imgHTML = '';
+      if(thumb){
+        imgHTML = `<img src="${thumb}" alt="${name}">`;
+      } else {
+        imgHTML = `<div class="placeholder">Pratinjau Dokumen</div>`;
+      }
+
+      modalPreview.innerHTML = `
+        <div class="cert-preview-image">
+          ${imgHTML}
+          <button class="cert-preview-btn-overlay" onclick="openPdfLightbox('${pdf}', '${name.replace(/'/g, "\\'")}')">Lihat Penuh</button>
+        </div>
+        <div class="cert-preview-info">
+          <h2>${name}</h2>
+          <p class="meta">${issuer} ${year ? ' · ' + year : ''}</p>
+          <p class="desc">${desc}</p>
+        </div>
+        <div class="cert-preview-actions">
+          <a href="${pdf}" download>Unduh PDF</a>
+        </div>
+      `;
+    }
+
+    function openModal(group){
+      modalList.innerHTML = '';
+      modalTitle.textContent = labels[group] || group;
+      
+      const items = dataRoot.querySelectorAll('.cert-group[data-group="' + group + '"] .cert-item');
+      
+      if(items.length === 0){
+        modalList.innerHTML = '<div style="padding:20px; color:var(--dim); text-align:center;">Belum ada dokumen</div>';
+        modalPreview.innerHTML = '<div class="cert-empty-state">Belum ada dokumen</div>';
+      } else {
+        let firstItemRendered = false;
+
+        items.forEach((item, index) => {
+          const name = item.getAttribute('data-name');
+          const issuer = item.getAttribute('data-issuer');
+          const year = item.getAttribute('data-year');
+          
+          const listItem = document.createElement('div');
+          listItem.className = 'cert-list-item';
+          if(index === 0) listItem.classList.add('active');
+          
+          listItem.innerHTML = `
+            <div class="cert-list-icon">📄</div>
+            <div class="cert-list-text">
+              <h4>${name}</h4>
+              <p>${issuer} ${year ? '· ' + year : ''}</p>
+            </div>
+          `;
+
+          listItem.addEventListener('click', () => {
+            modalList.querySelectorAll('.cert-list-item').forEach(el => el.classList.remove('active'));
+            listItem.classList.add('active');
+            renderPreview(item);
+          });
+
+          modalList.appendChild(listItem);
+
+          if(!firstItemRendered) {
+            renderPreview(item);
+            firstItemRendered = true;
+          }
+        });
+      }
+
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(){
+      overlay.classList.remove('open');
+      if(!lightbox.classList.contains('open')){
+        document.body.style.overflow = '';
+      }
+    }
+
+    folders.forEach(f => {
+      f.addEventListener('click', () => openModal(f.getAttribute('data-cert-group')));
+    });
+
+    modalClose.addEventListener('click', closeModal);
+    overlay.addEventListener('click', (e) => {
+      if(e.target === overlay) closeModal(); 
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape' && overlay.classList.contains('open') && !lightbox.classList.contains('open')){
+        closeModal();
+      }
+    });
+
+  })();
+</script>
+
+</body>
+</html>
