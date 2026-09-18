@@ -478,6 +478,13 @@
     color:var(--dim);
     font-size:0.85rem;
     border-bottom:1px solid var(--line);
+    overflow:hidden;
+  }
+  .project-thumb img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
   }
   html[data-theme="dark"] .project-thumb {
     background:linear-gradient(135deg, #2A2A28, #1F1F1E);
@@ -828,6 +835,104 @@
     .cert-preview-image{height:200px;}
   }
 
+  /* =========================================
+     PROJECT DETAIL MODAL (POP-UP TENGAH)
+     ========================================= */
+  .project-modal-overlay{
+    position:fixed;inset:0;
+    background:rgba(11,11,10,0.6);
+    backdrop-filter:blur(3px);
+    z-index:150;
+    opacity:0;visibility:hidden;
+    transition:opacity 0.35s ease, visibility 0.35s ease;
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;
+  }
+  .project-modal-overlay.open{opacity:1;visibility:visible;}
+
+  .project-modal{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    width:680px; max-width:100%;
+    max-height:90vh;
+    display:flex;flex-direction:column;
+    box-shadow:0 24px 48px rgba(0,0,0,0.2);
+    transform:translateY(20px) scale(0.98);
+    transition:transform 0.4s cubic-bezier(0.22,1,0.36,1);
+    overflow:hidden;
+  }
+  .project-modal-overlay.open .project-modal{transform:translateY(0) scale(1);}
+
+  .project-modal-close{
+    position:absolute; top:16px; right:16px;
+    width:34px;height:34px;border-radius:50%;
+    border:1px solid var(--line);
+    background:var(--card);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer; z-index:2;
+    font-size:1rem; color:var(--dim);
+    transition:background 0.2s ease, color 0.2s ease;
+  }
+  .project-modal-close:hover{background:var(--line); color:var(--ink);}
+
+  .project-modal-image{
+    width:100%; height:320px;
+    background:linear-gradient(135deg, #EDEAE3, #DEDACF);
+    display:flex;align-items:center;justify-content:center;
+    overflow:hidden; position:relative; flex-shrink:0;
+    padding:16px;
+    cursor:zoom-in;
+  }
+  html[data-theme="dark"] .project-modal-image{
+    background:linear-gradient(135deg, #2A2A28, #1F1F1E);
+  }
+  .project-modal-image img{
+    width:100%; height:100%;
+    object-fit:contain;
+    border-radius:8px;
+    transition:transform 0.35s cubic-bezier(0.22,1,0.36,1);
+  }
+  .project-modal-image:hover img{
+    transform:scale(1.06);
+  }
+  .project-modal-image .placeholder{
+    font-family:'JetBrains Mono',monospace; color:var(--dim); font-size:0.85rem;
+  }
+
+  .project-modal-body{padding:28px 32px 32px; overflow-y:auto;}
+  .project-modal-body h2{font-family:'Space Grotesk',sans-serif; font-size:1.4rem; margin-bottom:14px; line-height:1.3;}
+  .project-modal-body p.desc{color:var(--dim); font-size:0.95rem; line-height:1.7; margin-bottom:20px;}
+  .project-modal-tags{display:flex;flex-wrap:wrap;gap:6px; margin-bottom:24px;}
+  .project-modal-tags span{
+    font-family:'JetBrains Mono',monospace;font-size:0.72rem;
+    color:var(--ink);border:1px solid var(--line);
+    padding:4px 10px;border-radius:6px;
+    display:inline-block;
+    cursor:default;
+    transition:transform 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+  .project-modal-tags span:hover{
+    transform:translateY(-3px) scale(1.05);
+    background:var(--ink);
+    color:var(--bg);
+    border-color:var(--ink);
+  }
+  .project-modal-actions{display:flex; gap:12px; flex-wrap:wrap; margin-top:4px;}
+  .project-modal-actions a{
+    font-family:'JetBrains Mono',monospace; font-size:0.8rem;
+    padding:10px 18px; border-radius:8px; border:1px solid var(--line);
+    background:var(--bg); color:var(--ink); text-decoration:none;
+    transition:background 0.2s, transform 0.2s;
+    display:inline-flex; align-items:center; gap:6px;
+  }
+  .project-modal-actions a:hover{background:var(--line); transform:translateY(-2px);}
+
+  @media (max-width:640px){
+    .project-modal-image{height:200px;}
+    .project-modal-body{padding:22px 20px 26px;}
+  }
+
   /* TYPEWRITER */
   .typewriter p{
     opacity:0;
@@ -983,7 +1088,7 @@
     <div class="hero-right">
       <div class="portrait">
         <!-- Ganti div placeholder ini dengan: <img src="foto-kamu.jpg" alt="Foto [Nama Kamu]"> -->
-        <div class="placeholder-txt">[Taruh foto potret kamu<br>di sini — ganti tag ini<br>dengan &lt;img src="foto.jpg"&gt;]</div>
+        <img src="foto.jpg" alt="Foto Potret">
       </div>
       <div class="portrait-tag mono">2026 · Aktif</div>
     </div>
@@ -1088,30 +1193,101 @@
     <h2 class="section-title">Project yang Pernah Saya Kerjakan</h2>
     <div class="project-grid">
 
-      <div class="project-card">
-        <div class="project-thumb">[Screenshot Project 1]</div>
+      <div class="project-card" data-project="true"
+        data-title="Chatbot Personal"
+        data-repo="https://github.com/Rafansyahwidyanto/ChatbotPersonal"
+        data-img="assets/projects/chatbot-personal.jpg"
+        data-desc="Chatbot personal berbasis integrasi LLM-Based Tools dan Gemini API untuk Data Scientists. Chatbot ini dibangun untuk membantu menjawab pertanyaan dan mengolah data secara interaktif melalui antarmuka web."
+        >
+        <div class="project-thumb"><img src="assets/projects/chatbot-personal.jpg" alt="Screenshot Chatbot Personal"></div>
         <div class="project-body">
-          <h3>[Nama Project 1]</h3>
-          <p>[Deskripsi singkat: apa masalah yang diselesaikan, apa peranmu.]</p>
-          <div class="project-tags"><span>[Tech]</span><span>[Tech]</span></div>
+          <h3>Chatbot Personal</h3>
+          <p>ChatBot LLM-Based Tools and Gemini API Integration for Data Scientists.</p>
+          <div class="project-tags"><span>Web Development</span><span>HTML</span><span>CSS</span><span>PHP</span><span>Streamlit</span></div>
           <a class="project-link mono" href="#"><span class="arrow">→</span> Lihat detail</a>
         </div>
       </div>
-      <div class="project-card">
-        <div class="project-thumb">[Screenshot Project 2]</div>
+      <div class="project-card" data-project="true"
+        data-title="Barbergo"
+        data-repo="https://github.com/Rafansyahwidyanto/Barbergo"
+        data-img="assets/projects/barbergo.jpg"
+        data-desc="Barbergo adalah aplikasi Android untuk memesan jasa cukur secara online. Pengguna dapat memilih barbershop, menjadwalkan waktu potong rambut, dan menyimpan data pemesanan secara real-time menggunakan Firebase."
+        >
+        <div class="project-thumb"><img src="assets/projects/barbergo.jpg" alt="Screenshot Barbergo"></div>
         <div class="project-body">
-          <h3>[Nama Project 2]</h3>
-          <p>[Deskripsi singkat project.]</p>
-          <div class="project-tags"><span>[Tech]</span><span>[Tech]</span></div>
+          <h3>Barbergo</h3>
+          <p>Sebuah aplikasi pemesanan jasa cukur.</p>
+          <div class="project-tags"><span>Android App</span><span>Java</span><span>Firebase</span></div>
           <a class="project-link mono" href="#"><span class="arrow">→</span> Lihat detail</a>
         </div>
       </div>
-      <div class="project-card">
-        <div class="project-thumb">[Screenshot Project 3]</div>
+      <div class="project-card" data-project="true"
+        data-title="Detection Bot"
+        data-repo="https://github.com/Rafansyahwidyanto/DetectionBot"
+        data-img="assets/projects/detection-bot.jpg"
+        data-desc="Sistem deteksi dini berbasis Machine Learning untuk mengenali pola penyebaran hoax terkait pinjaman online (pinjol) ilegal, disajikan melalui dashboard interaktif berbasis Streamlit."
+        >
+        <div class="project-thumb"><img src="assets/projects/detection-bot.jpg" alt="Screenshot Detection Bot"></div>
         <div class="project-body">
-          <h3>[Nama Project 3]</h3>
-          <p>[Deskripsi singkat project.]</p>
-          <div class="project-tags"><span>[Tech]</span><span>[Tech]</span></div>
+          <h3>Detection Bot</h3>
+          <p>Deteksi dini & pola penyebaran hoax pinjaman online (pinjol) ilegal.</p>
+          <div class="project-tags"><span>Machine Learning</span><span>Python</span><span>Streamlit</span></div>
+          <a class="project-link mono" href="#"><span class="arrow">→</span> Lihat detail</a>
+        </div>
+      </div>
+      <div class="project-card" data-project="true"
+        data-title="Toko Alat Musik"
+        data-repo="https://github.com/Rafansyahwidyanto/tokoalatmusik"
+        data-img="assets/projects/toko-alat-musik.jpg"
+        data-desc="Website e-commerce sederhana untuk penjualan alat musik, mencakup fitur katalog produk, keranjang belanja, dan proses transaksi dasar berbasis HTML, CSS, dan PHP."
+        >
+        <div class="project-thumb"><img src="assets/projects/toko-alat-musik.jpg" alt="Screenshot Toko Alat Musik"></div>
+        <div class="project-body">
+          <h3>Toko Alat Musik</h3>
+          <p>Website e-commerce sederhana untuk penjualan alat musik.</p>
+          <div class="project-tags"><span>Web Development</span><span>HTML</span><span>CSS</span><span>PHP</span></div>
+          <a class="project-link mono" href="#"><span class="arrow">→</span> Lihat detail</a>
+        </div>
+      </div>
+      <div class="project-card" data-project="true"
+        data-title="Data Mining"
+        data-repo="https://github.com/Rafansyahwidyanto/DataMiningApriori"
+        data-img=""
+        data-desc="Project analisis Market Basket menggunakan algoritma Apriori untuk mengidentifikasi asosiasi antar-item, yaitu pola dimana pembelian item A cenderung diikuti pembelian item B, diolah dari dataset transaksi menggunakan Java dan Microsoft Excel."
+        >
+        <div class="project-thumb"></div>
+        <div class="project-body">
+          <h3>Data Mining</h3>
+          <p>Project ini untuk mengidentifikasi item-item yang, jika item A dibeli, maka item B juga akan dibeli.</p>
+          <div class="project-tags"><span>Data Mining</span><span>Java</span><span>Microsoft Excel</span><span>Dataset</span><span>Apriori</span></div>
+          <a class="project-link mono" href="#"><span class="arrow">→</span> Lihat detail</a>
+        </div>
+      </div>
+      <div class="project-card" data-project="true"
+        data-title="QR Generator"
+        data-repo="https://github.com/Rafansyahwidyanto/QRGenerator"
+        data-img="assets/projects/qr-generator.jpg"
+        data-desc="Website sederhana untuk membuat (generate) kode QR secara instan dari teks atau tautan yang dimasukkan pengguna, dibangun menggunakan HTML, CSS, dan PHP."
+        >
+        <div class="project-thumb"><img src="assets/projects/qr-generator.jpg" alt="Screenshot QR Generator"></div>
+        <div class="project-body">
+          <h3>QR Generator</h3>
+          <p>Website untuk membuat kode QR.</p>
+          <div class="project-tags"><span>Web Development</span><span>HTML</span><span>CSS</span><span>PHP</span></div>
+          <a class="project-link mono" href="#"><span class="arrow">→</span> Lihat detail</a>
+        </div>
+      </div>
+      <div class="project-card" data-project="true"
+        data-title="Lyrics Song Terminal"
+        data-repo="https://github.com/Rafansyahwidyanto/LyricsProgram"
+        data-img="assets/projects/lyrics-program.jpg"
+        data-desc="Program berbasis Python yang menampilkan lirik lagu secara berjalan (running text) langsung di terminal, mengikuti waktu berjalannya lagu."
+        >
+        <div class="project-thumb"><img src="assets/projects/lyrics-program.jpg" alt="Screenshot Lyrics Song Terminal"></div>
+        <div class="project-body">
+          <h3>Lyrics Song Terminal</h3>
+          <p>Program python untuk menampilkan lirik lagu pada terminal.</p>
+          <div class="project-tags"><span>Running Lyrics</span><span>Python</span></div>
           <a class="project-link mono" href="#"><span class="arrow">→</span> Lihat detail</a>
         </div>
       </div>
@@ -1126,7 +1302,7 @@
     <h2 class="section-title">Sertifikat &amp; Sertifikasi</h2>
     <p class="cert-intro">
       Dua kategori berbeda: <strong>Sertifikat</strong> untuk bukti keikutsertaan seminar/webinar/pelatihan singkat,
-      dan <strong>Sertifikasi</strong> untuk kualifikasi formal berjenjang (mis. CCNA, TOEFL).
+      dan <strong>Sertifikasi</strong> untuk kualifikasi formal berjenjang.
     </p>
     <div class="cert-folder-grid">
       <button class="cert-folder" type="button" data-cert-group="sertifikat" aria-haspopup="dialog">
@@ -1147,13 +1323,33 @@
   <!-- DATA SERTIFIKAT -->
   <div id="certData" hidden>
     <div class="cert-group" data-group="sertifikat">
-      <div class="cert-item" data-name="Peserta Seminar Teknologi Nasional" data-issuer="Kementerian Kominfo" data-year="2025" data-desc="Keikutsertaan dalam seminar terkait perkembangan teknologi AI di Indonesia yang diselenggarakan oleh Kementerian." data-pdf="#" data-thumb=""></div>
-      <div class="cert-item" data-name="Webinar: Cloud Computing 101" data-issuer="AWS User Group" data-year="2025" data-desc="Pengenalan dasar-dasar Cloud Computing menggunakan infrastruktur dari Amazon Web Services." data-pdf="#" data-thumb=""></div>
-      <div class="cert-item" data-name="Workshop UI/UX Fundamental" data-issuer="Himpunan Mahasiswa" data-year="2024" data-desc="Pelatihan desain antarmuka dasar menggunakan Figma selama 2 hari." data-pdf="#" data-thumb=""></div>
+      <div class="cert-item" data-name="MAKRAB Sistem Informasi 2024 - A Nights of Thrills and Chills" data-issuer="HIMASI - Universitas Budi Luhur" data-year="2024" data-desc="Peserta dalam acara MAKRAB Sistem Informasi 2024, diselenggarakan oleh Himpunan Mahasiswa Sistem Informasi (HIMASI) di Villa Panatraco, Cibogo Puncak." data-pdf="assets/certs/pdf/cert01.pdf" data-thumb="assets/certs/thumb/cert01.jpg"></div>
+      <div class="cert-item" data-name="Technical Workshop & Talkshow AI Engineer" data-issuer="Hacktiv8" data-year="2026" data-desc="Sertifikat partisipasi dalam Technical Workshop by Hacktiv8 serta sesi Talkshow & Workshop bertema AI Engineer." data-pdf="assets/certs/pdf/cert06.pdf" data-thumb="assets/certs/thumb/cert06.jpg"></div>
+      <div class="cert-item" data-name="Certificate of Accomplishment - LLM-Based Tools & Gemini API Integration" data-issuer="Hacktiv8 x Maju Bareng AI" data-year="2026" data-desc="Menyelesaikan program Maju Bareng AI dengan kursus LLM-Based Tools & Gemini API Integration for Data Scientists, termasuk proyek akhir." data-pdf="assets/certs/pdf/cert02.pdf" data-thumb="assets/certs/thumb/cert02.jpg"></div>
+      <div class="cert-item" data-name="Workshop: Launch Your First Website with Web Hosting Basics" data-issuer="HIMASI - SI Fest 2025" data-year="2025" data-desc="Peserta workshop dalam rangkaian Sistem Informasi Festival 2025 'Magical World of Technology' di Lab ICT Universitas Budi Luhur." data-pdf="assets/certs/pdf/cert03.pdf" data-thumb="assets/certs/thumb/cert03.jpg"></div>
+      <div class="cert-item" data-name="Seminar SI Fest 2024: Master Web Development from Basic to Advanced" data-issuer="HIMASI - Universitas Budi Luhur" data-year="2024" data-desc="Peserta seminar dalam acara SI Fest 2024 di Auditorium Grha Mahardika Bujana, Universitas Budi Luhur." data-pdf="assets/certs/pdf/cert04.pdf" data-thumb="assets/certs/thumb/cert04.jpg"></div>
+      <div class="cert-item" data-name="Seminar: Zero to Scaled - Unlocking Rapid E-Commerce Growth with Next-Gen Enterprise Tech" data-issuer="HIMASI - SI Fest 2025" data-year="2025" data-desc="Peserta seminar dalam rangkaian Sistem Informasi Festival 2025 'Magical World of Technology'." data-pdf="assets/certs/pdf/cert05.pdf" data-thumb="assets/certs/thumb/cert05.jpg"></div>
+      <div class="cert-item" data-name="Webinar: Dua Generasi Satu Medan Laga - Milenial dan Gen Z dalam Realita Kerja Modern" data-issuer="Laboratorium ICT Terpadu - Universitas Budi Luhur" data-year="2026" data-desc="Peserta webinar yang diselenggarakan oleh Laboratorium ICT Terpadu Universitas Budi Luhur." data-pdf="assets/certs/pdf/cert07.pdf" data-thumb="assets/certs/thumb/cert07.jpg"></div>
+      <div class="cert-item" data-name="Kuliah Umum: Logika Matematika - Fondasi Penting untuk Ilmu Komputer, Robotika, dan IoT" data-issuer="Fakultas Teknologi Informasi - Universitas Budi Luhur" data-year="2024" data-desc="Peserta kuliah umum yang diselenggarakan oleh Fakultas Teknologi Informasi Universitas Budi Luhur." data-pdf="assets/certs/pdf/cert08.pdf" data-thumb="assets/certs/thumb/cert08.jpg"></div>
+      <div class="cert-item" data-name="One Day Kebudiluhuran" data-issuer="Pusat Pengembangan Kebudiluhuran" data-year="2025" data-desc="Peserta kegiatan One Day Kebudiluhuran: membudayakan Budi Pekerti di lingkungan perguruan tinggi menuju Indonesia yang berkebudayaan." data-pdf="assets/certs/pdf/cert09.pdf" data-thumb="assets/certs/thumb/cert09.jpg"></div>
+      <div class="cert-item" data-name="Sosialisasi GEMASTIK 2026" data-issuer="Fakultas Teknologi Informasi - Universitas Budi Luhur" data-year="2026" data-desc="Peserta sosialisasi GEMASTIK 2026 yang diselenggarakan secara daring." data-pdf="assets/certs/pdf/cert10.pdf" data-thumb="assets/certs/thumb/cert10.jpg"></div>
+      <div class="cert-item" data-name="Webinar IT#4: Research Made Easier with AI - Solusi Cerdas untuk Mahasiswa" data-issuer="Laboratorium ICT Terpadu - Universitas Budi Luhur" data-year="2026" data-desc="Peserta webinar Research Made Easier with AI yang diselenggarakan oleh Laboratorium ICT Terpadu Universitas Budi Luhur." data-pdf="assets/certs/pdf/cert11.pdf" data-thumb="assets/certs/thumb/cert11.jpg"></div>
+      <div class="cert-item" data-name="Talkshow: Your Lungs, Your Choice - Bebas dari Rokok dan TBC" data-issuer="Lembaga Perkumpulan Pemberantasan Tuberkulosis Indonesia (PPTI)" data-year="2024" data-desc="Peserta talkshow membangun generasi muda untuk bebas dari rokok dan TBC." data-pdf="assets/certs/pdf/cert12.pdf" data-thumb="assets/certs/thumb/cert12.jpg"></div>
+      <div class="cert-item" data-name="Kuliah Umum Tren Teknologi Informasi: AI dalam Pendidikan" data-issuer="Fakultas Teknologi Informasi - Universitas Budi Luhur" data-year="2024" data-desc="Peserta kuliah umum bertema 'AI dalam Pendidikan: Meningkatkan Kreativitas dan Inovasi Mahasiswa'." data-pdf="assets/certs/pdf/cert13.pdf" data-thumb="assets/certs/thumb/cert13.jpg"></div>
+      <div class="cert-item" data-name="Grand Launching Cabinet" data-issuer="BEM Fakultas Teknologi Informasi - Universitas Budi Luhur" data-year="2025" data-desc="Peserta acara Grand Launching Cabinet di Teater Universitas Budi Luhur." data-pdf="assets/certs/pdf/cert14.pdf" data-thumb="assets/certs/thumb/cert14.jpg"></div>
+      <div class="cert-item" data-name="Kepengurusan HIMASI Periode 2025/2026 - Staff Divisi Education" data-issuer="HIMASI - Universitas Budi Luhur" data-year="2025" data-desc="Partisipasi dan kontribusi dalam Himpunan Mahasiswa Sistem Informasi (HIMASI) sebagai Staff Divisi Education periode 2025/2026." data-pdf="assets/certs/pdf/cert15.pdf" data-thumb="assets/certs/thumb/cert15.jpg"></div>
+      <div class="cert-item" data-name="Panitia MAKRAB - Fun Bonding with HIMASI" data-issuer="HIMASI - Universitas Budi Luhur" data-year="2025" data-desc="Panitia dalam acara Malam Keakraban Sistem Informasi 'Fun Bonding with HIMASI' di Puncak Bogor." data-pdf="assets/certs/pdf/cert16.pdf" data-thumb="assets/certs/thumb/cert16.jpg"></div>
+      <div class="cert-item" data-name="Talkshow Festival of Innovation IV - Ideas and Technology Collaboration for Innovation" data-issuer="BEM Fakultas Teknologi Informasi - Universitas Budi Luhur" data-year="2025" data-desc="Peserta talkshow dalam acara Festival of Innovation IV di Auditorium Grha Mahardika Bujana, Universitas Budi Luhur." data-pdf="assets/certs/pdf/cert18.pdf" data-thumb="assets/certs/thumb/cert18.jpg"></div>
     </div>
     <div class="cert-group" data-group="sertifikasi">
-      <div class="cert-item" data-name="Cisco Certified Network Associate (CCNA)" data-issuer="Cisco" data-year="2025" data-desc="Sertifikasi profesional internasional untuk membuktikan kompetensi dalam instalasi, konfigurasi, operasional, dan troubleshooting jaringan komputer." data-pdf="#" data-thumb=""></div>
-      <div class="cert-item" data-name="TOEFL ITP" data-issuer="ETS" data-year="2025" data-desc="Skor bahasa Inggris standar internasional. Dicapai skor: 550." data-pdf="#" data-thumb=""></div>
+      <div class="cert-item" data-name="Belajar Machine Learning untuk Pemula" data-issuer="Dicoding Indonesia" data-year="2026" data-desc="Sertifikat Kompetensi Kelulusan Dicoding Academy atas kelulusan pada kelas Belajar Machine Learning untuk Pemula." data-pdf="assets/certs/pdf/cert19.pdf" data-thumb="assets/certs/thumb/cert19.jpg"></div>
+      <div class="cert-item" data-name="Belajar Dasar Cloud dan Gen AI di AWS" data-issuer="Dicoding Indonesia" data-year="2026" data-desc="Sertifikat Kompetensi Kelulusan Dicoding Academy atas kelulusan pada kelas Belajar Dasar Cloud dan Gen AI di AWS." data-pdf="assets/certs/pdf/cert20.pdf" data-thumb="assets/certs/thumb/cert20.jpg"></div>
+      <div class="cert-item" data-name="Belajar Dasar Structured Query Language (SQL)" data-issuer="Dicoding Indonesia" data-year="2026" data-desc="Sertifikat Kompetensi Kelulusan Dicoding Academy atas kelulusan pada kelas Belajar Dasar Structured Query Language (SQL)." data-pdf="assets/certs/pdf/cert21.pdf" data-thumb="assets/certs/thumb/cert21.jpg"></div>
+      <div class="cert-item" data-name="Belajar Dasar Data Science" data-issuer="Dicoding Indonesia" data-year="2026" data-desc="Sertifikat Kompetensi Kelulusan Dicoding Academy atas kelulusan pada kelas Belajar Dasar Data Science." data-pdf="assets/certs/pdf/cert22.pdf" data-thumb="assets/certs/thumb/cert22.jpg"></div>
+      <div class="cert-item" data-name="Belajar Dasar AI" data-issuer="Dicoding Indonesia" data-year="2026" data-desc="Sertifikat Kompetensi Kelulusan Dicoding Academy atas kelulusan pada kelas Belajar Dasar AI." data-pdf="assets/certs/pdf/cert23.pdf" data-thumb="assets/certs/thumb/cert23.jpg"></div>
+      <div class="cert-item" data-name="Memulai Pemrograman dengan Python" data-issuer="Dicoding Indonesia" data-year="2026" data-desc="Sertifikat Kompetensi Kelulusan Dicoding Academy atas kelulusan pada kelas Memulai Pemrograman dengan Python." data-pdf="assets/certs/pdf/cert24.pdf" data-thumb="assets/certs/thumb/cert24.jpg"></div>
+      <div class="cert-item" data-name="Introduction to Financial Literacy" data-issuer="Dicoding Indonesia" data-year="2026" data-desc="Sertifikat Kompetensi Kelulusan Dicoding Academy atas kelulusan pada kelas Introduction to Financial Literacy." data-pdf="assets/certs/pdf/cert25.pdf" data-thumb="assets/certs/thumb/cert25.jpg"></div>
+      <div class="cert-item" data-name="Spec-Driven Development dengan Kiro" data-issuer="Dicoding Indonesia" data-year="2026" data-desc="Sertifikat Kompetensi Kelulusan Dicoding Academy atas kelulusan pada kelas Spec-Driven Development dengan Kiro." data-pdf="assets/certs/pdf/cert26.pdf" data-thumb="assets/certs/thumb/cert26.jpg"></div>
     </div>
   </div>
 </section>
@@ -1181,6 +1377,21 @@
       </div>
     </div>
 
+  </div>
+</div>
+
+<div class="project-modal-overlay" id="projectModalOverlay">
+  <div class="project-modal" id="projectModal" role="dialog" aria-modal="true" aria-labelledby="projectModalTitle">
+    <button class="project-modal-close" id="projectModalClose" aria-label="Tutup modal">✕</button>
+    <div class="project-modal-image" id="projectModalImage">
+      <span class="placeholder">Tidak ada screenshot</span>
+    </div>
+    <div class="project-modal-body">
+      <h2 id="projectModalTitle">Judul Project</h2>
+      <p class="desc" id="projectModalDesc">Deskripsi project.</p>
+      <div class="project-modal-tags" id="projectModalTags"></div>
+      <div class="project-modal-actions" id="projectModalActions"></div>
+    </div>
   </div>
 </div>
 
@@ -1727,6 +1938,82 @@
       }
     });
 
+  })();
+
+  (function initProjectModal(){
+    const overlay = document.getElementById('projectModalOverlay');
+    const modal = document.getElementById('projectModal');
+    const modalClose = document.getElementById('projectModalClose');
+    const modalImage = document.getElementById('projectModalImage');
+    const modalTitle = document.getElementById('projectModalTitle');
+    const modalDesc = document.getElementById('projectModalDesc');
+    const modalTags = document.getElementById('projectModalTags');
+    const modalActions = document.getElementById('projectModalActions');
+    const cards = document.querySelectorAll('.project-card[data-project="true"]');
+    if(!overlay || cards.length === 0) return;
+
+    function openModal(card){
+      const title = card.getAttribute('data-title') || card.querySelector('h3')?.textContent || 'Project';
+      const desc = card.getAttribute('data-desc') || card.querySelector('.project-body p')?.textContent || '';
+      const img = card.getAttribute('data-img') || '';
+      const repo = card.getAttribute('data-repo') || '';
+      const demo = card.getAttribute('data-demo') || '';
+      const tagEls = card.querySelectorAll('.project-tags span');
+
+      modalTitle.textContent = title;
+      modalDesc.textContent = desc;
+
+      if(img){
+        modalImage.innerHTML = `<img src="${img}" alt="Screenshot ${title}">`;
+        modalImage.onclick = () => window.open(img, '_blank');
+      } else {
+        modalImage.innerHTML = `<span class="placeholder">Tidak ada screenshot</span>`;
+        modalImage.onclick = null;
+      }
+
+      modalTags.innerHTML = '';
+      tagEls.forEach(t => {
+        const span = document.createElement('span');
+        span.textContent = t.textContent;
+        modalTags.appendChild(span);
+      });
+
+      modalActions.innerHTML = '';
+      if(demo){
+        modalActions.innerHTML += `<a href="${demo}" target="_blank" rel="noopener">↗ Live Demo</a>`;
+      }
+      if(repo){
+        modalActions.innerHTML += `<a href="${repo}" target="_blank" rel="noopener">Lihat Source Code (GitHub)</a>`;
+      }
+
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(){
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    cards.forEach(card => {
+      const link = card.querySelector('.project-link');
+      if(link){
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          openModal(card);
+        });
+      }
+    });
+
+    modalClose.addEventListener('click', closeModal);
+    overlay.addEventListener('click', (e) => {
+      if(e.target === overlay) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape' && overlay.classList.contains('open')){
+        closeModal();
+      }
+    });
   })();
 </script>
 
